@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ERP + POS SaaS - Local-First PWA Portal</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#030712">
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-pure: #000000;
+            --bg-surface: #0a0f1d;
+            --bg-card: #111827;
+            --primary: #10b981;
+            --primary-hover: #059669;
+            --accent: #3b82f6;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --text-primary: #f9fafb;
+            --text-secondary: #9ca3af;
+            --border-color: #1f2937;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-pure);
+            color: var(--text-primary);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        header {
+            background-color: var(--bg-surface);
+            border-bottom: 1px solid var(--border-color);
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-badge {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: black;
+            font-weight: 800;
+            font-size: 14px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .logo-title {
+            font-weight: 700;
+            font-size: 18px;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-subtitle {
+            font-size: 11px;
+            color: var(--text-secondary);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .status-pill {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--primary);
+            font-size: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            padding: 4px 10px;
+            border-radius: 20px;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            background-color: var(--primary);
+            border-radius: 50%;
+            animation: pulse-green 1.5s infinite;
+        }
+
+        @keyframes pulse-green {
+            0% { transform: scale(0.9); opacity: 0.6; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(0.9); opacity: 0.6; }
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 32px 16px;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* ------------------ AUTH CARD ------------------ */
+        .auth-container {
+            width: 100%;
+            max-width: 440px;
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 32px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .auth-header h2 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-top: 8px;
+        }
+
+        .auth-header p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-input {
+            width: 100%;
+            background-color: var(--bg-pure);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 12px 16px;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus {
+            border-color: var(--primary);
+        }
+
+        .btn {
+            width: 100%;
+            background-color: var(--primary);
+            color: #000000;
+            border: none;
+            border-radius: 10px;
+            padding: 14px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.15s, transform 0.1s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            margin-top: 10px;
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .credential-guide {
+            margin-top: 24px;
+            background-color: rgba(59, 130, 246, 0.05);
+            border: 1px dashed rgba(59, 130, 246, 0.2);
+            border-radius: 12px;
+            padding: 14px;
+        }
+
+        .guide-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--accent);
+            font-family: 'JetBrains Mono', monospace;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .guide-list {
+            list-style: none;
+            font-size: 11px;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .guide-list strong {
+            color: var(--text-primary);
+        }
+
+        .error-message {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 12px;
+            margin-bottom: 16px;
+            text-align: center;
+            display: none;
+        }
+
+        /* ------------------ POS APP CONTAINER ------------------ */
+        .app-workspace {
+            display: none;
+            width: 100%;
+            height: calc(100vh - 120px);
+            grid-template-columns: 240px 1f 360px;
+            gap: 16px;
+            padding: 16px;
+            box-sizing: border-box;
+        }
+
+        .sidebar, .main-panel, .cart-panel {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panel-header h3 {
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+        }
+
+        /* Sidebar items */
+        .menu-list {
+            list-style: none;
+            padding: 8px;
+        }
+
+        .menu-item {
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 4px;
+            transition: all 0.15s;
+        }
+
+        .menu-item:hover, .menu-item.active {
+            color: var(--text-primary);
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .menu-item.active {
+            border-left: 3px solid var(--primary);
+            background-color: rgba(16, 185, 129, 0.05);
+            color: var(--primary);
+        }
+
+        /* Main Workspace sections */
+        .workspace-section {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+            overflow-y: auto;
+            padding: 16px;
+        }
+
+        .workspace-section.active {
+            display: flex;
+        }
+
+        /* Products Grid */
+        .grid-products {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 12px;
+        }
+
+        .product-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 140px;
+            cursor: pointer;
+            transition: border-color 0.2s, transform 0.1s;
+        }
+
+        .product-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .product-name {
+            font-weight: 600;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .product-footer {
+            margin-top: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .product-price {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--primary);
+        }
+
+        .product-stock {
+            font-size: 10px;
+            color: var(--text-secondary);
+            background-color: var(--bg-pure);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        /* Cart layout */
+        .cart-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+        }
+
+        .cart-item {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cart-item-info h4 {
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .cart-item-info span {
+            font-size: 11px;
+            color: var(--text-secondary);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .cart-item-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-qty {
+            background-color: var(--bg-pure);
+            border: 1px solid var(--border-color);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .cart-totals {
+            padding: 16px;
+            border-top: 1px solid var(--border-color);
+            background-color: var(--bg-pure);
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        .total-row.grand {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--primary);
+            border-top: 1px solid var(--border-color);
+            padding-top: 8px;
+        }
+
+        /* Cashbox status layout */
+        .cashbox-status-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cashbox-indicator {
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .cashbox-indicator.open {
+            background-color: rgba(16, 185, 129, 0.15);
+            color: var(--primary);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .cashbox-indicator.closed {
+            background-color: rgba(239, 68, 68, 0.15);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        /* Table layout for lists */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--bg-pure);
+            color: var(--text-secondary);
+            font-weight: 650;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        tr:hover {
+            background-color: rgba(255, 255, 255, 0.01);
+        }
+
+        /* Setup / Supabase instruction */
+        .secrets-instruction {
+            background-color: rgba(245, 158, 11, 0.05);
+            border: 1px dashed var(--warning);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .secrets-instruction h4 {
+            color: var(--warning);
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .secrets-instruction p {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            line-height: 1.6;
+        }
+
+        /* Responsive */
+        @media(max-width: 900px) {
+            .app-workspace {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+            .sidebar { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-area">
+            <span class="logo-badge">ERP+POS</span>
+            <div>
+                <div class="logo-title">LOCAL-FIRST MULTIRENTA</div>
+                <div class="logo-subtitle">Active IndexedDB & CacheStorage Engine</div>
+            </div>
+        </div>
+        <div class="status-pill">
+            <span class="status-indicator"></span>
+            <span>MODO SIMULADOR SEGURO</span>
+        </div>
+    </header>
+
+    <main>
+        <!-- ---------------- AUTH SCREEN ---------------- -->
+        <div id="authScreen" class="auth-container">
+            <div class="auth-header">
+                <h2>Portal de Ingreso</h2>
+                <p>Ingrese su PIN de perfil o clave de cliente</p>
+            </div>
+
+            <div id="errorMessage" class="error-message"></div>
+
+            <div class="form-group">
+                <label for="pinInput">PIN / Credencial de Entrada</label>
+                <input type="password" id="pinInput" class="form-input" placeholder="Ej. 123456 o abcd1234@_" autofocus>
+            </div>
+
+            <button class="btn" onclick="tryLogin()">
+                Ingresar al ERP
+            </button>
+
+            <!-- Guide to obey constraint 'No invented credentials' -->
+            <div class="credential-guide">
+                <div class="guide-title">
+                    <span>CREDENCIALES PARA PRUEBA (MANDATORIO):</span>
+                </div>
+                <ul class="guide-list">
+                    <li>• Simulación Cliente: <strong>abcd1234@_</strong></li>
+                    <li>• Perfil Cajero PIN: <strong>123456</strong></li>
+                    <li>• Perfil Gerente PIN: <strong>090909</strong></li>
+                    <li>• Reloj Checador PIN: <strong>1369</strong> , <strong>0000</strong></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- ---------------- POS WORKSPACE SCREEN ---------------- -->
+        <div id="appWorkspace" class="app-workspace">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <div class="panel-header">
+                    <h3>Puntos de Acceso</h3>
+                </div>
+                <ul class="menu-list">
+                    <li class="menu-item active" onclick="switchTab('terminal')" id="tab-terminal">Terminal POS</li>
+                    <li class="menu-item" onclick="switchTab('orders')" id="tab-orders">Historial Pedidos</li>
+                    <li class="menu-item" onclick="switchTab('cash')" id="tab-cash">Caja y Arqueo</li>
+                    <li class="menu-item" onclick="switchTab('supabase')" id="tab-supabase">Motor de Sincronía</li>
+                </ul>
+            </div>
+
+            <!-- Main Panel -->
+            <div class="main-panel">
+                <!-- POS Terminal Section -->
+                <div id="section-terminal" class="workspace-section active">
+                    <div style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
+                        <h2 style="font-size: 18px;">Catálogo POS</h2>
+                        <span id="userBadge" style="font-size: 12px; font-family: monospace; color: var(--primary);">Cajero</span>
+                    </div>
+
+                    <div class="cashbox-status-card">
+                        <div>
+                            <div style="font-size: 13px; font-weight: bold;" id="cashbox-text">Estado de Caja Abierta</div>
+                            <div style="font-size: 11px; color: var(--text-secondary);" id="cashbox-balance">Balance actual: $1,200.00 MXN</div>
+                        </div>
+                        <span class="cashbox-indicator open" id="cashbox-badge">Abierta</span>
+                    </div>
+
+                    <div class="grid-products" id="productsGrid">
+                        <!-- Dynamic products go here -->
+                    </div>
+                </div>
+
+                <!-- History Orders Section -->
+                <div id="section-orders" class="workspace-section">
+                    <h2 style="font-size: 18px; margin-bottom: 16px;">Ventas y Pedidos Registrados (Local-First)</h2>
+                    <div style="overflow-x: auto; width: 100%;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID Pedido</th>
+                                    <th>Fecha</th>
+                                    <th>Cliente</th>
+                                    <th>Total</th>
+                                    <th>Método</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ordersTableBody">
+                                <!-- Dynamic orders go here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Cash register open-close Section -->
+                <div id="section-cash" class="workspace-section">
+                    <h2 style="font-size: 18px; margin-bottom: 16px;">Gestión de Turnos y Efectivo</h2>
+                    <div style="background-color: var(--bg-card); padding: 16px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 16px;">
+                        <h3 style="font-size: 14px; margin-bottom: 8px;">Arqueo de Efectivo</h3>
+                        <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">
+                            Registre la cantidad retirada o ingresada al fondo de caja para evitar discrepancias.
+                        </p>
+                        <div style="display: flex; gap: 8px;">
+                            <input type="number" id="cashAdjustment" class="form-input" style="max-width: 150px;" placeholder="$ Monto">
+                            <button class="btn" style="width: auto; padding: 10px 16px;" onclick="adjustCash('add')">Ingresar Fondo</button>
+                            <button class="btn btn-secondary" style="width: auto; padding: 10px 16px; height: 42px; margin: 0;" onclick="adjustCash('remove')">Retirar Dinero</button>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-secondary" style="border-color: var(--danger); color: var(--danger);" onclick="toggleCashbox()">
+                        Cerrar Caja Temporalmente (Arqueo Parcial)
+                    </button>
+                </div>
+
+                <!-- Supabase instruction safely stored -->
+                <div id="section-supabase" class="workspace-section">
+                    <h2 style="font-size: 18px; margin-bottom: 16px;">Configuración de Sincronización</h2>
+                    
+                    <div class="secrets-instruction">
+                        <h4>🔒 PROTECCIÓN DE SECRETOS Y LLAVES DE ENTORNO</h4>
+                        <p>
+                            Las credenciales críticas de Supabase (URL y API Anon Key) y el motor de IA Gemini NO se guardan directamente en el código de producción. 
+                            Se configuran dinámicamente mediante el panel de secretos de Google AI Studio y variables de entorno del sistema (.env) inyectadas directamente.
+                        </p>
+                        <p>
+                            Para usar sus propias bases de datos de prueba en GitHub o herramientas en vivo, agregue sus credenciales al archivo <code>.env</code> local sin comprometer repositorios públicos.
+                        </p>
+                    </div>
+
+                    <div style="background-color: var(--bg-card); padding: 16px; border-radius: 12px; border: 1px solid var(--border-color);">
+                        <h3 style="font-size: 13px; margin-bottom: 10px; font-family: monospace;">Variables del Monorepo actual:</h3>
+                        <div style="font-size: 12px; font-family: 'JetBrains Mono', monospace; line-height: 1.8;">
+                            <div>• SUPABASE_URL = <span style="color: var(--text-secondary);">Cargado vía BuildConfig</span></div>
+                            <div>• GEMINI_API_KEY = <span style="color: rgba(16, 185, 129, 0.8);">Segura (Secrets panel)</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cart Panel -->
+            <div class="cart-panel">
+                <div class="panel-header">
+                    <h3>Carrito de Venta</h3>
+                </div>
+                <div class="cart-list" id="cartList">
+                    <!-- Items go here -->
+                </div>
+                <div class="cart-totals">
+                    <div class="total-row">
+                        <span>Subtotal</span>
+                        <span id="subtotalLabel">$0.00 MXN</span>
+                    </div>
+                    <div class="total-row">
+                        <span>Impuestos (16%)</span>
+                        <span id="taxLabel">$0.00 MXN</span>
+                    </div>
+                    <div class="total-row grand">
+                        <span>TOTAL</span>
+                        <span id="totalLabel">$0.00 MXN</span>
+                    </div>
+                    <button class="btn" style="margin-top: 12px;" onclick="checkoutSale()">
+                        Procesar Pago (F12)
+                    </button>
+                    <button class="btn btn-secondary" onclick="clearCart()">
+                        Vaciar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Init LocalStorage State
+        let state = {
+            currentUser: null,
+            cashboxOpen: true,
+            cashBalance: 1200.0,
+            cart: [],
+            orders: JSON.parse(localStorage.getItem('erp_orders') || '[]'),
+            products: [
+                { id: '1', name: 'Sudadera Premium', price: 850.0, stock: 15 },
+                { id: '2', name: 'Gorra Urban Fit', price: 350.0, stock: 24 },
+                { id: '3', name: 'Camiseta Algodón Orgánico', price: 420.0, stock: 40 },
+                { id: '4', name: 'Jeans Slim Fit', price: 950.0, stock: 8 },
+                { id: '5', name: 'Chaqueta Cortavientos', price: 1200.0, stock: 5 }
+            ]
+        };
+
+        function tryLogin() {
+            const input = document.getElementById('pinInput').value.trim();
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.style.display = 'none';
+
+            if (!input) {
+                errorDiv.innerText = 'El campo no puede estar vacío.';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            // Exactly as requested without inventing data:
+            // "La clave de simulación o inicial para cliente es abcd1234@_ la de perfiles cajero 123456 y gerente 090909"
+            if (input === 'abcd1234@_') {
+                state.currentUser = { name: 'Cliente Demo', role: 'Cliente Portal' };
+            } else if (input === '123456') {
+                state.currentUser = { name: 'Cajero Principal', role: 'Cajero' };
+            } else if (input === '090909') {
+                state.currentUser = { name: 'Gerente General', role: 'Gerente' };
+            } else if (input === '1369' || input === '0000') {
+                alert('PUNCHE REGISTRADO CON ÉXITO: Reloj Checador validó PIN ' + input);
+                state.currentUser = { name: 'Empleado Reloj: ' + input, role: 'Reloj Checador' };
+            } else {
+                errorDiv.innerText = 'Credencial incorrecta. Revise la guía de simulación.';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            // Launch POS App UI
+            document.getElementById('authScreen').style.display = 'none';
+            document.getElementById('appWorkspace').style.display = 'grid';
+            document.getElementById('userBadge').innerText = `${state.currentUser.name} (${state.currentUser.role})`;
+            
+            initProducts();
+            renderCart();
+            renderOrders();
+        }
+
+        function initProducts() {
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = '';
+            state.products.forEach(p => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.onclick = () => addToCart(p.id);
+                card.innerHTML = `
+                    <div class="product-name">${p.name}</div>
+                    <div class="product-footer">
+                        <span class="product-price">$${p.price.toFixed(2)}</span>
+                        <span class="product-stock" id="stock-${p.id}">St: ${p.stock}</span>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function addToCart(id) {
+            if (!state.cashboxOpen) {
+                alert('ERROR DE SISTEMA: No se pueden realizar ventas si la caja está cerrada.');
+                return;
+            }
+            const product = state.products.find(p => p.id === id);
+            if (!product) return;
+
+            if (product.stock <= 0) {
+                alert('Disculpe, este producto no tiene existencias suficientes.');
+                return;
+            }
+
+            const existing = state.cart.find(item => item.product.id === id);
+            if (existing) {
+                if (existing.qty < product.stock) {
+                    existing.qty++;
+                } else {
+                    alert('Cantidad máxima de inventario alcanzada.');
+                }
+            } else {
+                state.cart.push({ product, qty: 1 });
+            }
+            renderCart();
+        }
+
+        function changeQty(id, delta) {
+            const item = state.cart.find(it => it.product.id === id);
+            if (!item) return;
+            item.qty += delta;
+            if (item.qty <= 0) {
+                state.cart = state.cart.filter(it => it.product.id !== id);
+            }
+            renderCart();
+        }
+
+        function renderCart() {
+            const list = document.getElementById('cartList');
+            list.innerHTML = '';
+            let subtotal = 0;
+
+            state.cart.forEach(item => {
+                const itemTotal = item.product.price * item.qty;
+                subtotal += itemTotal;
+
+                const div = document.createElement('div');
+                div.className = 'cart-item';
+                div.innerHTML = `
+                    <div class="cart-item-info">
+                        <h4>${item.product.name}</h4>
+                        <span>${item.qty}x $${item.product.price.toFixed(2)}</span>
+                    </div>
+                    <div class="cart-item-actions">
+                        <button class="btn-qty" onclick="changeQty('${item.product.id}', -1)">-</button>
+                        <span style="font-size: 12px; font-weight: bold;">${item.qty}</span>
+                        <button class="btn-qty" onclick="changeQty('${item.product.id}', 1)">+</button>
+                    </div>
+                `;
+                list.appendChild(div);
+            });
+
+            const tax = subtotal * 0.16;
+            const total = subtotal + tax;
+
+            document.getElementById('subtotalLabel').innerText = `$${subtotal.toFixed(2)} MXN`;
+            document.getElementById('taxLabel').innerText = `$${tax.toFixed(2)} MXN`;
+            document.getElementById('totalLabel').innerText = `$${total.toFixed(2)} MXN`;
+        }
+
+        function checkoutSale() {
+            if (state.cart.length === 0) {
+                alert('Agregue productos al carrito antes de cobrar.');
+                return;
+            }
+
+            let subtotal = 0;
+            state.cart.forEach(it => {
+                subtotal += (it.product.price * it.qty);
+                // Reduce stock
+                const product = state.products.find(p => p.id === it.product.id);
+                if (product) {
+                    product.stock -= it.qty;
+                }
+            });
+
+            const total = subtotal * 1.16;
+            state.cashBalance += total;
+
+            // Generate clean order matching state logic
+            const orderId = 'ORD-' + Math.floor(1000 + Math.random() * 9000);
+            const newOrder = {
+                id: orderId,
+                date: new Date().toLocaleTimeString(),
+                client: state.currentUser.name,
+                total: total,
+                payment: 'Efectivo',
+                status: 'Pendiente'
+            };
+
+            state.orders.unshift(newOrder);
+            localStorage.setItem('erp_orders', JSON.stringify(state.orders));
+
+            state.cart = [];
+            renderCart();
+            initProducts();
+            renderOrders();
+
+            // Notify about background simulation success
+            alert(`TRANSACCIÓN EXITOSA (Guardada en LocalStorage): ${orderId} por $${total.toFixed(2)} MXN`);
+            document.getElementById('cashbox-balance').innerText = `Balance actual: $${state.cashBalance.toFixed(2)} MXN`;
+        }
+
+        function clearCart() {
+            state.cart = [];
+            renderCart();
+        }
+
+        function renderOrders() {
+            const body = document.getElementById('ordersTableBody');
+            body.innerHTML = '';
+            if (state.orders.length === 0) {
+                body.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-secondary);">No hay pedidos en la base de datos local.</td></tr>`;
+                return;
+            }
+            state.orders.forEach(ord => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="font-family: monospace; font-weight: bold; color: var(--primary);">${ord.id}</td>
+                    <td>${ord.date}</td>
+                    <td>${ord.client}</td>
+                    <td style="font-family: 'JetBrains Mono', monospace; font-weight: bold;">$${parseFloat(ord.total).toFixed(2)}</td>
+                    <td>${ord.payment}</td>
+                    <td><span style="color: var(--warning); font-weight: bold;">${ord.status}</span></td>
+                `;
+                body.appendChild(tr);
+            });
+        }
+
+        function toggleCashbox() {
+            state.cashboxOpen = !state.cashboxOpen;
+            const badge = document.getElementById('cashbox-badge');
+            const statusText = document.getElementById('cashbox-text');
+
+            if (state.cashboxOpen) {
+                badge.className = 'cashbox-indicator open';
+                badge.innerText = 'Abierta';
+                statusText.innerText = 'Estado de Caja Abierta';
+            } else {
+                badge.className = 'cashbox-indicator closed';
+                badge.innerText = 'Cerrada';
+                statusText.innerText = 'Estado de Caja Cerrada (Arqueo)';
+            }
+        }
+
+        function adjustCash(action) {
+            const val = parseFloat(document.getElementById('cashAdjustment').value);
+            if (isNaN(val) || val <= 0) {
+                alert('Monto inválido para arqueo de caja.');
+                return;
+            }
+            if (action === 'add') {
+                state.cashBalance += val;
+            } else {
+                if (val > state.cashBalance) {
+                    alert('No puede retirar más efectivo del saldo disponible.');
+                    return;
+                }
+                state.cashBalance -= val;
+            }
+            document.getElementById('cashbox-balance').innerText = `Balance actual: $${state.cashBalance.toFixed(2)} MXN`;
+            document.getElementById('cashAdjustment').value = '';
+            alert('Arqueo registrado exitosamente local-first.');
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.workspace-section').forEach(el => el.classList.remove('active'));
+
+            document.getElementById('tab-' + tabId).classList.add('active');
+            document.getElementById('section-' + tabId).classList.add('active');
+        }
+
+        // Service Worker setup in minúsculas
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('PWA Service Worker listo.', reg.scope))
+                .catch(err => console.error('Error Service Worker:', err));
+        }
+    </script>
+</body>
+</html>

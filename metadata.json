@@ -1,0 +1,6 @@
+{
+  "name": "ERP POS SaaS",
+  "description": "Sistema ERP + POS SaaS Local-First",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

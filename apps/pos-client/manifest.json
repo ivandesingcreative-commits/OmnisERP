@@ -1,0 +1,16 @@
+{
+  "short_name": "ERPPOS",
+  "name": "ERP POS SaaS Local-First PWA",
+  "icons": [
+    {
+      "src": "icon.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    }
+  ],
+  "start_url": "index.html",
+  "background_color": "#0A0A0A",
+  "theme_color": "#121212",
+  "display": "standalone",
+  "orientation": "portrait"
+}
