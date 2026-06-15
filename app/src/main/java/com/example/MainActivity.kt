@@ -784,29 +784,12 @@ fun ViewLoginScreen(
                     }
                 }
             } else {
-                // Alphanumeric Standard Form for customers
-                OutlinedTextField(
-                    value = inputEmail,
-                    onValueChange = { inputEmail = it },
-                    label = { Text("Correo Electrónico") },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = accentColor,
-                        unfocusedBorderColor = borderColor,
-                        focusedLabelColor = accentColor,
-                        unfocusedLabelColor = textSecondary,
-                        focusedTextColor = textPrimary,
-                        unfocusedTextColor = textPrimary
-                    )
-                )
-
-                Spacer(modifier = Modifier.height(10.dp))
-
+                // Alphanumeric Standard Form for customers - Password only!
                 OutlinedTextField(
                     value = inputPassword,
                     onValueChange = { inputPassword = it },
-                    label = { Text("Contraseña") },
+                    label = { Text("Contraseña Alfanumérica") },
+                    placeholder = { Text("abcd1234@_") },
                     modifier = Modifier.fillMaxWidth(),
                     visualTransformation = PasswordVisualTransformation(),
                     singleLine = true,
@@ -825,11 +808,11 @@ fun ViewLoginScreen(
                 Button(
                     onClick = {
                         val clientEmployee = state.employees.find { it.pin == "abcd1234@_" } ?: Employee("abcd1234@_", "Cliente Demo", "Cliente Portal", false)
-                        val isClientCredential = inputEmail.trim() == "abcd1234@_" || inputPassword.trim() == "abcd1234@_"
+                        val isClientCredential = inputPassword.trim() == "abcd1234@_"
                         if (isClientCredential) {
                             onLoginSuccess(clientEmployee)
                         } else {
-                            val found = state.employees.find { it.pin == inputEmail.trim() || it.name.contains(inputEmail.trim(), ignoreCase = true) }
+                            val found = state.employees.find { it.pin == inputPassword.trim() }
                             if (found != null) {
                                 onLoginSuccess(found)
                             } else {
@@ -2908,9 +2891,9 @@ fun TimeClockDialog(
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                // Pin output indicator
+                // Pin output indicator - Restricted to 4 digits for Operarios Reloj Checador
                 Text(
-                    text = if (rawPin.isEmpty()) "• • • • • •" else rawPin.map { "•" }.joinToString(" "),
+                    text = if (rawPin.isEmpty()) "• • • •" else rawPin.map { "•" }.joinToString(" "),
                     fontSize = 24.sp,
                     color = textPrimary,
                     fontWeight = FontWeight.Bold,
@@ -2980,7 +2963,7 @@ fun TimeClockDialog(
                                                 rawPin = ""
                                             }
                                         } else {
-                                            if (rawPin.length < 6) rawPin += label
+                                            if (rawPin.length < 4) rawPin += label
                                         }
                                     },
                                     colors = ButtonDefaults.buttonColors(containerColor = borderColor, contentColor = textPrimary),
